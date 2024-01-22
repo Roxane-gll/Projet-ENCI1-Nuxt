@@ -40,7 +40,7 @@ export default {
         value: 'projector'
       },
       time: 0,
-      maxTime: 75,
+      maxTime: 100,
       visualOpacity: 1,
       audioOpacity: 0,
       visualInteract: [{
@@ -50,10 +50,11 @@ export default {
         }],
       instumentUsed: {},
       leftP: 0,
-      animWidth: 75,
+      animWidth: 100,
       animAuto: [],
       animAutoTime: [],
-      chapter4Visu: 0
+      chapter4Visu: 0,
+      socket : null
     }
   },
   watch: {
@@ -65,7 +66,11 @@ export default {
             anim.style.opacity = 1
           }
           setTimeout(() => {
-            this.time += 0.25
+            if (this.chapter === 1) {
+              this.time += 0.5
+            } else {
+              this.time += 0.25
+            }
           }, 250)
         }
       },
@@ -74,24 +79,24 @@ export default {
   },
   async mounted() {
     // Connectez-vous au WebSocket ici
-    const socket = new WebSocket('ws://localhost:3001'); // Remplacez l'URL par celle de votre serveur WebSocket
+    this.socket = new WebSocket('ws://localhost:3001'); // Remplacez l'URL par celle de votre serveur WebSocket
     
-    socket.addEventListener('open', (event) => {
+    this.socket.addEventListener('open', (event) => {
       console.log('WebSocket ouvert');
-      socket.send(JSON.stringify(this.connectionJson))
+      this.socket.send(JSON.stringify(this.connectionJson))
     });
 
-    socket.addEventListener('message', (event) => {
+    this.socket.addEventListener('message', (event) => {
       console.log('Message reçu:', event.data);
       const data = this.stringToJson(event.data)
       this.handleInfo(data)
     });
 
-    socket.addEventListener('close', (event) => {
+    this.socket.addEventListener('close', (event) => {
       console.log('WebSocket fermé');
     });
 
-    socket.addEventListener('error', (event) => {
+    this.socket.addEventListener('error', (event) => {
       console.error('Erreur WebSocket:', event);
     })
     console.log("hey")
@@ -150,17 +155,17 @@ export default {
         this.animAuto = []
         this.animAutoTime = []
         if (data.value === "2") {
-          this.animAuto = [{video: `/images/chapters/chapter-${this.chapter}/end.webm`, time:65, class: "emp"}]
-          this.animAutoTime = [65]
+          this.animAuto = [{video: `/images/chapters/chapter-${this.chapter}/end.webm`, time:60, class: "emp"}]
+          this.animAutoTime = [60]
         }
         if (data.value === "4") {
           this.chapter4Visu = 0
-          this.animAuto = [{video: `/images/chapters/chapter-${this.chapter}/lueeur.webm`, time:55, class: "lue" , style:`left:-${this.time}vw`}]
-          this.animAutoTime = [55]
+          this.animAuto = [{video: `/images/chapters/chapter-${this.chapter}/lueeur.webm`, time:45, class: "lue" , style:`left:-${this.time}vw`}]
+          this.animAutoTime = [45]
         }
         if (data.value === "3") {
-          this.animAuto = [{video: `/images/chapters/chapter-${this.chapter}/lulu.webm`, time:65, class: "lulu" }]
-          this.animAutoTime = [65]
+          this.animAuto = [{video: `/images/chapters/chapter-${this.chapter}/lulu.webm`, time:55, class: "lulu" }]
+          this.animAutoTime = [55]
         }
       }
       if (data.name === 'rover') {

@@ -41,7 +41,6 @@ wss.on('connection', (ws) => {
       }
       return obj.ws != ws
     })
-    console.log(clientsT)
   });
 });
 
