@@ -17,7 +17,7 @@
     <div id="audio" :style="`opacity: ${audioOpacity}`"></div>
     <div v-if="interaction && visualOpacity === 1">
       <template v-for="i in visualInteract" :key="i.id">
-        <div :style="`left:${leftP}%`" :class="i.class" :id="i.id">
+        <div :style="i.style" :class="i.class" :id="i.id">
           <video :style="`width:${animWidth}%`" autoplay muted loop >
             <source :src="i.video" type="video/mp4">
           </video>
@@ -32,7 +32,7 @@ export default {
   data() {
     return {
       chapter: 3,
-      imgSrc: "/images/chapters/3.png",
+      imgSrc: "/images/chapters/2.png",
       interaction: true,
       storyStarted: false,
       connectionJson: {
@@ -45,8 +45,9 @@ export default {
       audioOpacity: 0,
       visualInteract: [{
           id: 1,
-          class: `visualI chapter3`,
-          video: `/images/chapters/chapter-${3}/${1}.webm`
+          class: `visualI chapter2`,
+          video: `/images/chapters/chapter-${2}/${1}.webm`,
+          style: `margin-top: 5px;margin-left: 8px`
         }],
       instumentUsed: {},
       leftP: 0,
@@ -61,6 +62,7 @@ export default {
     time: {
       handler(value) {
         if (value < this.maxTime && !this.interaction && this.storyStarted) {
+          console.log(this.time, this.animAutoTime.includes)
           if(this.animAutoTime.includes(value)) {
             var anim = document.getElementById(value)
             anim.style.opacity = 1
@@ -198,6 +200,7 @@ export default {
           id: this.visualInteract.length + 1,
           class: `visualI chapter${this.chapter}`,
           video: `/images/chapters/chapter-${this.chapter}/${videoId}.webm`,
+          style: this.getRandomTopLeft()
         })
         this.anim()
       }
@@ -209,7 +212,13 @@ export default {
       lastVisu.style.opacity = 1
       setTimeout(() => {
           lastVisu.style.opacity = 0
-      }, 3000)
+      }, 5000)
+    },
+
+    getRandomTopLeft() {
+      let top = Math.floor(Math.random() * 200)
+      let left = Math.floor(Math.random() * 200) + this.leftP
+      return `margin-top: ${top}px;margin-left: ${left}px`
     }
   }
 };
@@ -250,6 +259,7 @@ body{
 
 .visualI {
   position:absolute;
+  top: 40%;
   z-index: 2;
   width: 100%;
   height: 100%;
@@ -260,29 +270,7 @@ body{
 video {
   position: absolute;
   width: 75%;
-}
-
-.turnSphero {
-  background-color: aquamarine;
-}
-
-.tapSphero {
-  background-color: cornflowerblue;
-}
-.button1 {
-  background-color: violet;
-}
-
-.button2 {
-  background-color: cadetblue;
-}
-
-.rotocoder {
-  background-color: crimson;
-}
-
-.micro {
-  background-color: gold;
+  left: -50%;
 }
 
 .emp {
