@@ -62,13 +62,14 @@ export default {
     time: {
       handler(value) {
         if (value < this.maxTime && !this.interaction && this.storyStarted) {
-          console.log(this.time, this.animAutoTime.includes)
           if(this.animAutoTime.includes(value)) {
+            console.log("##############################################################")
             var anim = document.getElementById(value)
             anim.style.opacity = 1
+            console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
           }
           setTimeout(() => {
-            if (this.chapter === 1) {
+            if (this.chapter === 1 || this.chapter === 5) {
               this.time += 0.5
             } else {
               this.time += 0.25
@@ -84,12 +85,10 @@ export default {
     this.socket = new WebSocket('ws://localhost:3001'); // Remplacez l'URL par celle de votre serveur WebSocket
     
     this.socket.addEventListener('open', (event) => {
-      console.log('WebSocket ouvert');
       this.socket.send(JSON.stringify(this.connectionJson))
     });
 
     this.socket.addEventListener('message', (event) => {
-      console.log('Message reçu:', event.data);
       const data = this.stringToJson(event.data)
       this.handleInfo(data)
     });
@@ -101,13 +100,11 @@ export default {
     this.socket.addEventListener('error', (event) => {
       console.error('Erreur WebSocket:', event);
     })
-    console.log("hey")
   },
   methods: {
     stringToJson(string) {
       try {
         var jsonObj = JSON.parse(string);
-        console.log(jsonObj)
         return jsonObj
       } catch (error) {
         console.error('Erreur lors de la conversion en JSON :', error.message);
@@ -133,9 +130,13 @@ export default {
           if (data.value === 'visual') {
             this.visualOpacity = 1
             this.visualInteract = []
-            if (this.chapter == 4) {
+            if (this.chapter === 4) {
               this.chapter4Visu += 1
               this.chapter = this.chapter4Visu === 2 ? 45 : 4
+            }
+            if (this.chapter === 3) {
+              this.animAuto = this.animAuto.slice(-1)
+              this.animAutoTime = this.animAutoTime.slice(-1)
             }
           }
         }
@@ -156,25 +157,25 @@ export default {
         this.imgSrc = `/images/chapters/${this.chapter}.png`
         this.animAuto = []
         this.animAutoTime = []
-        if (data.value === "2") {
-          this.animAuto = [{video: `/images/chapters/chapter-${this.chapter}/end.webm`, time:60, class: "emp"}]
-          this.animAutoTime = [60]
+        var dataInt = parseInt(data.value)
+        if (dataInt === 2) {
+          console.log("chapter 2 60")
+          this.animAuto = [{video: `/images/chapters/chapter-${this.chapter}/end.webm`, time:80, class: "emp"}]
+          this.animAutoTime = [80]
         }
-        if (data.value === "4") {
+        if (dataInt === 4) {
           this.chapter4Visu = 0
-          this.animAuto = [{video: `/images/chapters/chapter-${this.chapter}/lueeur.webm`, time:45, class: "lue" , style:`left:-${this.time}vw`}]
-          this.animAutoTime = [45]
         }
-        if (data.value === "3") {
-          this.animAuto = [{video: `/images/chapters/chapter-${this.chapter}/lulu.webm`, time:55, class: "lulu" }]
-          this.animAutoTime = [55]
+        if (dataInt === 3) {
+          this.animAuto = [{video: `/images/chapters/chapter-${this.chapter}/lulu.webm`, time:55, class: "lulu1" }, {video: `/images/chapters/chapter-${this.chapter}/lulu.webm`, time:85, class: "lulu" }]
+          this.animAutoTime = [55, 85]
         }
       }
       if (data.name === 'rover') {
-        this.leftP = (parseInt(data.value) / 2.0) * 100
+        this.leftP = (parseFloat(data.value) / 2.1) * 1920
+        console.log(this.leftP)
       }
       if (data.name === 'connection') {
-        console.log('connection')
         this.time = 0
         this.storyStarted = 0
         this.chapter = 1
@@ -198,7 +199,7 @@ export default {
         }
         this.visualInteract.push({
           id: this.visualInteract.length + 1,
-          class: `visualI chapter${this.chapter}`,
+          class: `visualI chapter${this.chapter} type${videoId}-${this.chapter}`,
           video: `/images/chapters/chapter-${this.chapter}/${videoId}.webm`,
           style: this.getRandomTopLeft()
         })
@@ -208,11 +209,12 @@ export default {
     anim() {
       let allVisu = document.getElementsByClassName("visualI")
       let lastVisu = allVisu[allVisu.length - 1]
-      console.log(allVisu, lastVisu)
-      lastVisu.style.opacity = 1
-      setTimeout(() => {
-          lastVisu.style.opacity = 0
-      }, 5000)
+      if (lastVisu !== undefined) {
+        lastVisu.style.opacity = 1
+        setTimeout(() => {
+            lastVisu.style.opacity = 0
+        }, 1000)
+      }
     },
 
     getRandomTopLeft() {
@@ -259,7 +261,7 @@ body{
 
 .visualI {
   position:absolute;
-  top: 40%;
+  top: 10%;
   z-index: 2;
   width: 100%;
   height: 100%;
@@ -274,9 +276,8 @@ video {
 }
 
 .emp {
-  right: -10%;
+  left: 35%;
   bottom: 0;
-  opacity: 0;
 }
 
 .lue {
@@ -284,11 +285,15 @@ video {
 }
 
 .chapter4 {
-  top: -25%;
+  top: -35%;
+}
+
+.type2-4 {
+  width: 60%;
 }
 
 .chapter45 {
-  top: -25%;
+  top: -5%;
 }
 
 .vAnim {
@@ -301,5 +306,12 @@ video {
 
 .lulu {
   top:0;
+  left: 35%;
+}
+
+.lulu1 {
+  top:0;
+  left: 35%;
+  width: 60%;
 }
 </style>

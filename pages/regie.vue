@@ -92,7 +92,7 @@ export default {
   methods: {
     sendTabletteMusicaleMessage(id) {
       // Envoyez l'ID du bouton au serveur WebSocket
-      this.socket.send(JSON.stringify({ 'idInput': id, "value": "true" }));
+      this.socket.send(JSON.stringify({'name': 'rpi', 'idInput': id, "value": "true" }));
     },
     generateJson() {
       const jsonData = {
