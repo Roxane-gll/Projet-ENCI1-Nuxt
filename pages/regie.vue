@@ -46,6 +46,10 @@
       </div>
       <button class="btn btn-primary" @click="sendRoverPosition(sliderValue)">send rover position</button>
     </div>
+    <br>
+    <div>
+      <button class="btn btn-primary" @click="reset()">reset</button>
+    </div>
   </div>
 </template>
 
@@ -86,12 +90,12 @@ export default {
 
     this.socket.addEventListener('error', (event) => {
       console.error('Erreur WebSocket:', event);
-    })
+    });
+
     console.log("hey")
   },
   methods: {
     sendTabletteMusicaleMessage(id) {
-      // Envoyez l'ID du bouton au serveur WebSocket
       this.socket.send(JSON.stringify({ 'idInput': id, "value": "true" }));
     },
     generateJson() {
@@ -134,7 +138,14 @@ export default {
       };
       this.socket.send(JSON.stringify(jsonData));
     },
-  },
+    reset(){
+      const jsonData = {
+        name: "startStory",
+        value: "true"
+      };
+      this.socket.send(JSON.stringify(jsonData));
+    }
+  }
 };
 </script>
 
