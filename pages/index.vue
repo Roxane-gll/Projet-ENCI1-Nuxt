@@ -2,6 +2,7 @@
 <template>
   <div>
     <div class="imgDiv">
+     <img src="/images/mask.png" id="mask"> 
      <img :src="imgSrc" alt="Discover Nuxt 3" id="backgroundImg" :style="`left:-${time}vw`"/>
      <div style="width:3840px">
       <div v-if="animAuto.length !== 0">
@@ -55,7 +56,7 @@ export default {
       animWidth: 100,
       animAuto: [],
       animAutoTime: [],
-      chapter4Visu: 0,
+      chapterVisu: 0,
       socket : null
     }
   },
@@ -64,10 +65,8 @@ export default {
       handler(value) {
         if (value < this.maxTime && !this.interaction && this.storyStarted) {
           if(this.animAutoTime.includes(value)) {
-            console.log("##############################################################")
             var anim = document.getElementById(value)
             anim.style.opacity = 1
-            console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
           }
           setTimeout(() => {
             if (this.chapter === 1 || this.chapter === 5) {
@@ -131,11 +130,11 @@ export default {
           if (data.value === 'visual') {
             this.visualOpacity = 1
             this.visualInteract = []
-            if (this.chapter === 4) {
-              this.chapter4Visu += 1
-              this.chapter = this.chapter4Visu === 2 ? 45 : 4
+            if ([4, 10, 12, 15, 18, 20, 23, 26].includes(this.chapter)) {
+              this.chapterVisu += 1
+              this.chapter = this.chapterVisu === 2 ? parseInt(`${this.chapter}5`) : this.chapter
             }
-            if (this.chapter === 3) {
+            if ([3, 22, 25].includes(this.chapter)) {
               this.animAuto = this.animAuto.slice(-1)
               this.animAutoTime = this.animAutoTime.slice(-1)
             }
@@ -159,27 +158,43 @@ export default {
         this.animAuto = []
         this.animAutoTime = []
         var dataInt = parseInt(data.value)
-        if (dataInt === 2 || dataInt === 6 || dataInt === 8) {
-          this.animAuto = [{video: `/images/chapters/chapter-${this.chapter}/end.webm`, time:80, class: "emp"}]
-          this.animAutoTime = [80]
+        if ([2, 6, 8, 13, 16, 19, 21, 24].includes(dataInt)) {
+          this.animAuto = [{video: `/images/chapters/chapter-${this.chapter}/end.webm`, time:60, class: "emp"}]
+          this.animAutoTime = [60]
         }
-        if (dataInt === 4) {
-          this.chapter4Visu = 0
+        if ([4, 10, 12, 15, 18, 20, 23, 26].includes(dataInt)) {
+          this.chapterVisu = 0
         }
-        if (dataInt === 3) {
-          this.animAuto = [{video: `/images/chapters/chapter-${this.chapter}/lulu.webm`, time:55, class: "lulu1" }, {image: `/images/chapters/chapter-${this.chapter}/lulu2.png`, time:85, class: "lulu", style:true }]
-          this.animAutoTime = [55, 85]
+        if ([3, 22].includes(dataInt)) {
+          this.animAuto = [{video: `/images/chapters/chapter-${this.chapter}/lulu.webm`, time:45, class: "lulu1" }, {image: `/images/chapters/chapter-${this.chapter}/lulu2.png`, time:65, class: "lulu", style:true }]
+          this.animAutoTime = [45, 65]
         }
-        if (dataInt === 7) {
-          this.animAuto = [{image: `/images/chapters/chapter-${this.chapter}/requin1.png`, time:35, class: "requin1", style:true }, {image: `/images/chapters/chapter-${this.chapter}/requin2.png`, time:35.5, class: "requin2", style:true }, {image: `/images/chapters/chapter-${this.chapter}/requin3.png`, time:36, class: "requin3", style:true }]
-          this.animAutoTime = [35, 35.5, 36 ]
+        if ([7, 17].includes(dataInt)) {
+          this.animAuto = [{image: `/images/chapters/chapter-${this.chapter}/animal1.png`, time:25, class: "animal1", style:true }, {image: `/images/chapters/chapter-${this.chapter}/animal2.png`, time:25.5, class: "animal2", style:true }, {image: `/images/chapters/chapter-${this.chapter}/animal3.png`, time:26, class: "animal3", style:true }]
+          this.animAutoTime = [25, 25.5, 26]
+        }
+        if ([11].includes(dataInt)) {
+          this.animAuto = [{image: `/images/chapters/chapter-${this.chapter}/animal1.png`, time:25, class: "animal1-b", style:true }, {image: `/images/chapters/chapter-${this.chapter}/animal2.png`, time:25.5, class: "animal2-b", style:true }, {image: `/images/chapters/chapter-${this.chapter}/animal3.png`, time:26, class: "animal3-b", style:true }]
+          this.animAutoTime = [25, 25.5, 26]
+        }
+        if ([14].includes(dataInt)) {
+          this.animAuto = [{image: `/images/chapters/chapter-${this.chapter}/animal1.png`, time:25, class: "animal1-again", style:true }, {image: `/images/chapters/chapter-${this.chapter}/animal2.png`, time:25.5, class: "animal2-again", style:true }]
+          this.animAutoTime = [25, 25.5]
+        }
+        if ([9].includes(dataInt)) {
+          this.animAuto = [{image: `/images/chapters/chapter-${this.chapter}/animal1.png`, time:25, class: "animal1-only", style:true }]
+          this.animAutoTime = [25]
+        }
+        if (dataInt === 25) {
+          this.animAuto = [{video: `/images/chapters/chapter-${this.chapter}/lulu.webm`, time:45, class: "lulu1" }, {image: `/images/chapters/chapter-${this.chapter}/animal1.png`, time:65, class: "animal1-b-s", style:true }, {image: `/images/chapters/chapter-${this.chapter}/animal2.png`, time:65.5, class: "animal2-b-s", style:true }, {image: `/images/chapters/chapter-${this.chapter}/animal3.png`, time:66, class: "animal3-b-s", style:true }]
+          this.animAutoTime = [45, 65, 65.5, 66]
         }
       }
       if (data.name === 'rover') {
         this.leftP = (parseFloat(data.value) / 2.1) * 1920
         console.log(this.leftP)
       }
-      if (data.name === 'connection') {
+      if (data.name === 'startStory') {
         this.time = 0
         this.storyStarted = 0
         this.chapter = 1
@@ -198,7 +213,7 @@ export default {
     addVisualIntend(idInput) {
       if (this.instumentUsed.hasOwnProperty(idInput)) {
         let videoId = 1
-        if (["turnSphero"].includes(idInput)) {
+        if (["turnSphero", "button1", "rotocoder"].includes(idInput)) {
           videoId = 2
         }
         this.visualInteract.push({
@@ -245,6 +260,15 @@ body{
   z-index: 0;
 }
 
+#mask {
+  height: 100vh;
+  width: 100vw;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 2;
+}
+
 #visual {
   position: relative;
   width: 50px;
@@ -283,6 +307,7 @@ video {
 .emp {
   left: 35%;
   bottom: 0;
+  transition: all 1s;
 }
 
 .lue {
@@ -317,25 +342,70 @@ video {
   transition: left 0.5s;
 }
 
-.requin1 {
+.animal1 {
   position: absolute;
   top:25%;
   margin-left: 35vw;
   transition: left 0.5s;
 }
 
-.requin2 {
+.animal2 {
   position: absolute;
   top:25%;
   margin-left: 53vw;
   transition: left 0.5s;
 }
 
-.requin3 {
+.animal3 {
   position: absolute;
   top:25%;
   margin-left: 65vw;
   transition: left 0.5s;
+}
+
+.animal1-b {
+  position: absolute;
+  top:70%;
+  margin-left: 35vw;
+  transition: left 0.5s;
+}
+
+.animal2-b {
+  position: absolute;
+  top:70%;
+  margin-left: 53vw;
+  transition: left 0.5s;
+}
+
+.animal3-b {
+  position: absolute;
+  top:70%;
+  margin-left: 65vw;
+  transition: left 0.5s;
+}
+
+.animal1-b-s {
+  position: absolute;
+  top:70%;
+  margin-left: 35vw;
+  transition: left 0.5s;
+  width: 30vw;
+}
+
+.animal2-b-s {
+  position: absolute;
+  top:70%;
+  margin-left: 53vw;
+  transition: left 0.5s;
+  width:30vw;
+}
+
+.animal3-b-s {
+  position: absolute;
+  top:70%;
+  margin-left: 65vw;
+  transition: left 0.5s;
+  width: 30vw;
 }
 
 .vAnim {
@@ -346,5 +416,29 @@ video {
   top:0;
   left: 35%;
   width: 60%;
+}
+
+.animal1-again {
+  position: absolute;
+  top:25%;
+  margin-left: 35vw;
+  transition: left 0.5s;
+  width: 20vw;
+}
+
+.animal2-again {
+  position: absolute;
+  top:45%;
+  margin-left: 53vw;
+  transition: left 0.5s;
+  width: 30vw;
+}
+
+.animal1-only {
+  position: absolute;
+  top:55%;
+  margin-left: 35vw;
+  transition: left 0.5s;
+  width: 20vw;
 }
 </style>
