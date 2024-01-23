@@ -6,7 +6,8 @@
      <div style="width:3840px">
       <div v-if="animAuto.length !== 0">
         <div v-for="anim in animAuto" :key="anim.time" :id="anim.time" class="vAnim">
-          <video :class="anim.class" autoplay muted loop :style="anim.style ? `left:-${time - anim.time}vw` : ''">
+          <img v-if="anim.image" :src="anim.image" :class="anim.class" :style="anim.style ? `left:-${time - anim.time}vw` : ''">
+          <video v-if="anim.video" :class="anim.class" autoplay muted loop :style="anim.style ? `left:-${time - anim.time}vw` : ''">
               <source :src="anim.video" type="video/mp4">
           </video>
         </div>
@@ -158,8 +159,7 @@ export default {
         this.animAuto = []
         this.animAutoTime = []
         var dataInt = parseInt(data.value)
-        if (dataInt === 2) {
-          console.log("chapter 2 60")
+        if (dataInt === 2 || dataInt === 6 || dataInt === 8) {
           this.animAuto = [{video: `/images/chapters/chapter-${this.chapter}/end.webm`, time:80, class: "emp"}]
           this.animAutoTime = [80]
         }
@@ -167,8 +167,12 @@ export default {
           this.chapter4Visu = 0
         }
         if (dataInt === 3) {
-          this.animAuto = [{video: `/images/chapters/chapter-${this.chapter}/lulu.webm`, time:55, class: "lulu1" }, {video: `/images/chapters/chapter-${this.chapter}/lulu.webm`, time:85, class: "lulu" }]
+          this.animAuto = [{video: `/images/chapters/chapter-${this.chapter}/lulu.webm`, time:55, class: "lulu1" }, {image: `/images/chapters/chapter-${this.chapter}/lulu2.png`, time:85, class: "lulu", style:true }]
           this.animAutoTime = [55, 85]
+        }
+        if (dataInt === 7) {
+          this.animAuto = [{image: `/images/chapters/chapter-${this.chapter}/requin1.png`, time:35, class: "requin1", style:true }, {image: `/images/chapters/chapter-${this.chapter}/requin2.png`, time:35.5, class: "requin2", style:true }, {image: `/images/chapters/chapter-${this.chapter}/requin3.png`, time:36, class: "requin3", style:true }]
+          this.animAutoTime = [35, 35.5, 36 ]
         }
       }
       if (data.name === 'rover') {
@@ -273,6 +277,7 @@ video {
   position: absolute;
   width: 75%;
   left: -50%;
+  transition: all 1s;
 }
 
 .emp {
@@ -305,8 +310,36 @@ video {
 }
 
 .lulu {
-  top:0;
+  position: absolute;
+  top:25%;
   left: 35%;
+  margin-left: 60vw;
+  transition: left 0.5s;
+}
+
+.requin1 {
+  position: absolute;
+  top:25%;
+  margin-left: 35vw;
+  transition: left 0.5s;
+}
+
+.requin2 {
+  position: absolute;
+  top:25%;
+  margin-left: 53vw;
+  transition: left 0.5s;
+}
+
+.requin3 {
+  position: absolute;
+  top:25%;
+  margin-left: 65vw;
+  transition: left 0.5s;
+}
+
+.vAnim {
+  transition: all 1s;
 }
 
 .lulu1 {

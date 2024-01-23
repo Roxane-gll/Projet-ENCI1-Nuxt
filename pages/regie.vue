@@ -31,12 +31,9 @@
     </div>
     <br>
     <div class="flex">
-      <div v-for="chapter in 5" :key="chapter">
-        <input type="radio" :id="'chapter' + chapter" name="chapter" :value="chapter" v-model="selectedChapter">
-        <label :for="'chapter' + chapter">Chapitre {{ chapter }}</label>
-      </div>
-      <button class="btn btn-primary" @click="goToChapter(selectedChapter)">GoToChapter</button>
-      <button class="btn btn-primary" @click="startChapter(selectedChapter)">StartChapter</button>
+      <input :v-model="chapter">
+      <button class="btn btn-primary" @click="goToChapter()">GoToChapter</button>
+      <button class="btn btn-primary" @click="startChapter()">StartChapter</button>
     </div>
 
     <div>
@@ -63,6 +60,7 @@ export default {
         micro: true
       },
       sliderValue: 0,
+      chapter: 0
     };
   },
   async mounted() {
@@ -113,17 +111,17 @@ export default {
       };
       this.socket.send(JSON.stringify(jsonData));
     },
-    goToChapter(chapter) {
+    goToChapter() {
       const jsonData = {
         name: "chapter",
-        value: chapter
+        value: this.chapter
       };
       this.socket.send(JSON.stringify(jsonData));
     },
-    startChapter(chapter) {
+    startChapter() {
       const jsonData = {
         name: "story",
-        value: chapter
+        value: this.chapter
       };
       this.socket.send(JSON.stringify(jsonData));
     },
