@@ -43,6 +43,10 @@
       </div>
       <button class="btn btn-primary" @click="sendRoverPosition(sliderValue)">send rover position</button>
     </div>
+    <br>
+    <div>
+      <button class="btn btn-primary" @click="reset()">reset</button>
+    </div>
   </div>
 </template>
 
@@ -84,7 +88,8 @@ export default {
 
     this.socket.addEventListener('error', (event) => {
       console.error('Erreur WebSocket:', event);
-    })
+    });
+
     console.log("hey")
   },
   methods: {
@@ -132,7 +137,14 @@ export default {
       };
       this.socket.send(JSON.stringify(jsonData));
     },
-  },
+    reset(){
+      const jsonData = {
+        name: "startStory",
+        value: "true"
+      };
+      this.socket.send(JSON.stringify(jsonData));
+    }
+  }
 };
 </script>
 
