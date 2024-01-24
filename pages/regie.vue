@@ -314,6 +314,14 @@ export default {
       if(data.name == "chapters"){
         this.chapters = data.value
       }
+      if (data.name == "rpi") {
+        if ([0].includes(this.currentChapter) && ["button2", "micro", "turnSphero"].includes(id)) {
+          let soundName = "d"
+          let audio = new Audio(`/all_sounds/${soundName}-sound/${soundName}-${id}.wav`)
+          if(audio != null)
+            audio.play()
+        }
+      }
     },
     stringToJson(string) {
       try {
