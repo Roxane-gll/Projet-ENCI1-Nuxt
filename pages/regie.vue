@@ -86,7 +86,8 @@ export default {
       chapters : "",
       chapterPassed: 0,
       currentChapter: 1,
-      interact: ""
+      interact: "",
+      backgroundSound: "/all_sounds/backgroundMusic/1.mp3"
     };
   },
   async mounted() {
