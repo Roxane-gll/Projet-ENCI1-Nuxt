@@ -70,12 +70,12 @@ export default {
     return {
       socket:null,
       checkboxes: {
+        turnSphero: true,
+        tapSphero: true,
+        micro: true,
         button1: true,
         button2: true,
-        tapSphero: true,
-        turnSphero: true,
-        rotocoder: true,
-        micro: true
+        rotocoder: true
       },
       connectionJson: {
         name: 'connection',
@@ -134,7 +134,7 @@ export default {
     generateJson() {
       const jsonData = {
         name: "interact",
-        value: this.checkboxes
+        value: JSON.parse(JSON.stringify(this.checkboxes))
       };
       this.socket.send(JSON.stringify(jsonData));
       const jsonData2 = {
@@ -142,6 +142,7 @@ export default {
         value: this.selectedInteractionType
       };
       this.socket.send(JSON.stringify(jsonData2));
+      this.rover_stop()
       var audioT = document.getElementById("backgroundAudio")
       audioT.volume = 0.10
       this.interact = this.selectedInteractionType
@@ -155,6 +156,7 @@ export default {
         name: "interact",
         value: "false"
       };
+      this.rover_go()
       this.socket.send(JSON.stringify(jsonData));
     },
     goToChapter() {
@@ -167,10 +169,6 @@ export default {
         value: this.chapterIndex
       };
       this.socket.send(JSON.stringify(jsonData));
-      if (this.currentChapter === 1) {
-        let audioP = new Audio(`/all_sounds/backgroundMusic/start-chapter-end.wav`)
-        audioP.play()
-      }
       this.currentChapter = this.chapterIndex
       var audio = document.getElementById("backgroundAudio")
       audio.pause()
@@ -213,22 +211,27 @@ export default {
       this.socketRover = new WebSocket('ws://192.168.43.205:8081');
 
       this.socketRover.addEventListener('open', (event) => {
-        console.log('WebSocket ouvert');
+        console.log('WebSocket Rover ouvert');
         // this.socketRover.send(JSON.stringify(this.connectionJson))
       });
 
       this.socketRover.addEventListener('message', (event) => {
         console.log('Message reçu:', event.data);
         const data = this.stringToJson(event.data)
+        if(data.position != null){
+          this.sliderValue = data.position
+          console.log(data)
+          this.sendRoverPosition(data.position)
+        }
         this.handleInfo(data)
       });
 
       this.socketRover.addEventListener('close', (event) => {
-        console.log('WebSocket fermé');
+        console.log('WebSocket Rover fermé');
       });
 
       this.socketRover.addEventListener('error', (event) => {
-        console.error('Erreur WebSocket:', event);
+        console.error('Erreur WebSocket Rover:', event);
       });
     },
     rover_go(){
@@ -265,6 +268,12 @@ export default {
           action: "uturn",
         };
         this.socketRover.send(JSON.stringify(this.jsonDataRoverUturn));
+    },
+    bruit_porte(){
+      if (this.currentChapter === 1) {
+        let audioP = new Audio(`/all_sounds/backgroundMusic/start-chapter-end.wav`)
+        audioP.play()
+      }
     },
 
 
