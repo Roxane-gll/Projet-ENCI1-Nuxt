@@ -70,12 +70,12 @@ export default {
     return {
       socket:null,
       checkboxes: {
+        turnSphero: true,
+        tapSphero: true,
+        micro: true,
         button1: true,
         button2: true,
-        tapSphero: true,
-        turnSphero: true,
-        rotocoder: true,
-        micro: true
+        rotocoder: true
       },
       connectionJson: {
         name: 'connection',
@@ -134,7 +134,7 @@ export default {
     generateJson() {
       const jsonData = {
         name: "interact",
-        value: this.checkboxes
+        value: JSON.parse(JSON.stringify(this.checkboxes))
       };
       this.socket.send(JSON.stringify(jsonData));
       const jsonData2 = {
