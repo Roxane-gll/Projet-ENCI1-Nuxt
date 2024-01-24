@@ -142,8 +142,8 @@ export default {
         value: this.selectedInteractionType
       };
       this.socket.send(JSON.stringify(jsonData2));
-      var audio = document.getElementById("backgroundAudio")
-      audio.volume = 0.10
+      var audioT = document.getElementById("backgroundAudio")
+      audioT.volume = 0.10
       this.interact = this.selectedInteractionType
       let audio = new Audio(`/all_sounds/backgroundMusic/Signal.mp3`)
       audio.play()
@@ -168,8 +168,8 @@ export default {
       };
       this.socket.send(JSON.stringify(jsonData));
       if (this.currentChapter === 1) {
-        let audio = new Audio(`/all_sounds/backgroundMusic/start-chapter-end.mp3`)
-        audio.play()
+        let audioP = new Audio(`/all_sounds/backgroundMusic/start-chapter-end.wav`)
+        audioP.play()
       }
       this.currentChapter = this.chapterIndex
       var audio = document.getElementById("backgroundAudio")
