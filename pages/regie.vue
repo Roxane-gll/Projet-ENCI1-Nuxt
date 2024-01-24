@@ -85,12 +85,12 @@ export default {
   },
   async mounted() {
     // Connectez-vous au WebSocket ici
-    this.socket = new WebSocket('ws://192.168.43.229:3001');
+    this.socket = new WebSocket('ws://localhost:3001');
     this.reconnect_rover()
     
     this.socket.addEventListener('open', (event) => {
       console.log('WebSocket ouvert');
-      //this.socket.send(JSON.stringify(this.connectionJson))
+      this.socket.send(JSON.stringify(this.connectionJson))
     });
 
     this.socket.addEventListener('message', (event) => {
@@ -234,6 +234,15 @@ export default {
         this.chapters = data.value
       }
     },
+    stringToJson(string) {
+      try {
+        var jsonObj = JSON.parse(string);
+        return jsonObj
+      } catch (error) {
+        console.error('Erreur lors de la conversion en JSON :', error.message);
+        return error
+      }
+    }
 
   }
 };
