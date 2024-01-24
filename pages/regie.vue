@@ -187,6 +187,10 @@ export default {
       audio.pause()
       console.log(this.currentChapter)
       this.backgroundSound = `/all_sounds/backgroundMusic/${this.currentChapter}.mp3`
+
+      if(this.currentChapter == 0){
+        this.sendRoverPosition("1")
+      }
     },
     startChapter() {
       const jsonData = {

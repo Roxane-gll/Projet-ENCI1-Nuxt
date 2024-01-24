@@ -286,16 +286,19 @@ export default {
       this.timer = 1
     },
     addVisualIntend(idInput) {
+      console.log(idInput)
       if (this.instumentUsed.hasOwnProperty(idInput)) {
         let videoId = 1
         if (["turnSphero", "button1", "rotocoder"].includes(idInput)) {
           videoId = 2
         }
+        let randomTopLeft = this.getRandomTopLeft()
+        console.log(randomTopLeft)
         this.visualInteract.push({
           id: this.visualInteract.length + 1,
           class: `visualI chapter${this.chapter} type${videoId}-${this.chapter}`,
           video: `/images/chapters/chapter-${this.chapter}/${videoId}.webm`,
-          style: this.getRandomTopLeft()
+          style: randomTopLeft
         })
         this.anim()
       }
