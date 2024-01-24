@@ -315,9 +315,10 @@ export default {
         this.chapters = data.value
       }
       if (data.name == "rpi") {
-        if ([0].includes(this.currentChapter) && ["button2", "micro", "turnSphero"].includes(id)) {
+        if ([0].includes(this.currentChapter) && ["button2", "micro", "turnSphero"].includes(data.idInput)) {
+          console.log("in handle info name rpi")
           let soundName = "d"
-          let audio = new Audio(`/all_sounds/${soundName}-sound/${soundName}-${id}.wav`)
+          let audio = new Audio(`/all_sounds/${soundName}-sound/${soundName}-${data.idInput}.wav`)
           if(audio != null)
             audio.play()
         }
