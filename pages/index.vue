@@ -30,9 +30,29 @@
         <source src="/images/OREILLE.webm" type="video/mp4">
       </video>
     </div>
-    <div id="demo" :style="`opacity: ${demoOpacity}`">
+    <div id="demo" :style="`opacity: ${allDemo['turnSphero']}`">
       <video class="interactSignal" autoplay muted loop>
-        <source src="/images/OEIL.webm" type="video/mp4">
+        <source src="/images/turnSphero.webm" type="video/mp4">
+      </video>
+    </div>
+    <div id="demo" :style="`opacity: ${allDemo['tapSphero']}`">
+      <video class="interactSignal" autoplay muted loop>
+        <source src="/images/tapSphero.webm" type="video/mp4">
+      </video>
+    </div>
+    <div id="demo" :style="`opacity: ${allDemo['micro']}`">
+      <video class="interactSignal" autoplay muted loop>
+        <source src="/images/micro.webm" type="video/mp4">
+      </video>
+    </div>
+    <div id="demo" :style="`opacity: ${allDemo['button1']}`">
+      <video class="interactSignal" autoplay muted loop>
+        <source src="/images/button1.webm" type="video/mp4">
+      </video>
+    </div>
+    <div id="demo" :style="`opacity: ${allDemo['button2']}`">
+      <video class="interactSignal" autoplay muted loop>
+        <source src="/images/button2.webm" type="video/mp4">
       </video>
     </div>
     <div v-if="interaction && visual">
@@ -74,7 +94,15 @@ export default {
       visual: false,
       transitionOpacity: 0,
       demo:false,
-      demoOpacity: 0
+      demoVid: "/images/turnSphero.webm",
+      demoInstru: "",
+      allDemo: {
+        turnSphero: 0,
+        tapSphero: 0,
+        micro: 0,
+        button1: 0,
+        button2: 0
+      }
     }
   },
   watch: {
@@ -138,14 +166,21 @@ export default {
           this.visual = false
           this.time ++
         } else { 
+          if (this.chapter === 0) {
+            console.log(this.instumentUsed)
+            var used = Object.keys(this.instumentUsed).find(
+              key => this.instumentUsed[key] === true
+            )
+            this.allDemo[used] = 1
+          }
           if (typeof data.value === "object") {
             this.instumentUsed = data.value
           }
           this.interaction = true
-          if (data.value === 'audio') {
+          if (data.value === 'audio' && this.chapter !== 0) {
             this.audioOpacity = 1
           }
-          if (data.value === 'visual') {
+          if (data.value === 'visual' && this.chapter !== 0) {
             this.visualOpacity = 1
             this.visual = true
             this.visualInteract = []
@@ -170,6 +205,13 @@ export default {
         if (this.interaction) {
           this.visualOpacity = 0
           this.audioOpacity = 0
+          this.allDemo = {
+            turnSphero: 0,
+            tapSphero: 0,
+            micro: 0,
+            button1: 0,
+            button2: 0
+          }
         }
         this.addVisualIntend(data.idInput)
       }
@@ -238,9 +280,6 @@ export default {
         this.visualInteract = []
         this.instumentUsed = {}
         this.leftP = 0
-      }
-      if (data.name === "demo") {
-
       }
     },
     addToTravelling() {
@@ -367,6 +406,11 @@ video {
 
 .type2-4 {
   width: 60%;
+}
+
+.chapter13 {
+  width: 20vw;
+  top: 45%;
 }
 
 .chapter45 {
