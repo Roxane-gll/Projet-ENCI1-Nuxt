@@ -108,6 +108,7 @@ export default {
   watch: {
     time: {
       handler(value) {
+        console.log(value < this.maxTime, !this.interaction, this.storyStarted)
         if (value < this.maxTime && !this.interaction && this.storyStarted) {
           if(this.animAutoTime.includes(value)) {
             var anim = document.getElementById(value)
@@ -338,6 +339,10 @@ export default {
     getRandomTopLeft() {
       let top = Math.floor(Math.random() * 200)
       let left = Math.floor(Math.random() * 200) + this.leftP
+      if (this.chapter === 4) {
+        top = Math.floor(Math.random() * 50)
+        left = Math.floor(Math.random() * 300) + this.leftP
+      }
       return `margin-top: ${top}px;margin-left: ${left}px`
     }
   }
@@ -438,13 +443,17 @@ video {
   width: 60%;
 }
 
+.type1-4 {
+  top: -50%;
+}
+
 .chapter13 {
   width: 20vw;
   top: 45%;
 }
 
 .chapter45 {
-  top: -5%;
+  top: -25%;
 }
 
 .vAnim {
@@ -452,7 +461,8 @@ video {
 }
 
 .chapter3 {
-  top: 0;
+  top: 50%;
+  width: 30vw;
 }
 
 .lulu {
