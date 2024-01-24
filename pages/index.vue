@@ -73,7 +73,8 @@ export default {
       socket : null,
       visual: false,
       transitionOpacity: 0,
-      demo:false
+      demo:false,
+      demoOpacity: 0
     }
   },
   watch: {
