@@ -31,12 +31,9 @@
     </div>
     <br>
     <div class="flex">
-      <div v-for="chapter in 5" :key="chapter">
-        <input type="radio" :id="'chapter' + chapter" name="chapter" :value="chapter" v-model="selectedChapter">
-        <label :for="'chapter' + chapter">Chapitre {{ chapter }}</label>
-      </div>
-      <button class="btn btn-primary" @click="goToChapter(selectedChapter)">GoToChapter</button>
-      <button class="btn btn-primary" @click="startChapter(selectedChapter)">StartChapter</button>
+      <input type="number" v-model="chapterIndex">
+      <button class="btn btn-primary" @click="goToChapter()">GoToChapter</button>
+      <button class="btn btn-primary" @click="startChapter()">StartChapter</button>
     </div>
 
     <div>
@@ -75,7 +72,12 @@ export default {
         rotocoder: true,
         micro: true
       },
+      connectionJson: {
+        name: 'connection',
+        value: 'regie'
+      },
       sliderValue: 0,
+      chapterIndex: 0
     };
   },
   async mounted() {
@@ -85,13 +87,13 @@ export default {
     
     this.socket.addEventListener('open', (event) => {
       console.log('WebSocket ouvert');
-      this.socket.send(JSON.stringify(this.connectionJson))
+      //this.socket.send(JSON.stringify(this.connectionJson))
     });
 
     this.socket.addEventListener('message', (event) => {
       console.log('Message reçu:', event.data);
       const data = this.stringToJson(event.data)
-      this.handleInfo(data)
+      //this.handleInfo(data)
     });
 
     this.socket.addEventListener('close', (event) => {
@@ -106,7 +108,8 @@ export default {
   },
   methods: {
     sendTabletteMusicaleMessage(id) {
-      this.socket.send(JSON.stringify({ 'idInput': id, "value": "true" }));
+      // Envoyez l'ID du bouton au serveur WebSocket
+      this.socket.send(JSON.stringify({'name': 'rpi', 'idInput': id, "value": "true" }));
     },
     generateJson() {
       const jsonData = {
@@ -127,17 +130,18 @@ export default {
       };
       this.socket.send(JSON.stringify(jsonData));
     },
-    goToChapter(chapter) {
+    goToChapter() {
+      console.log(this.chapterIndex)
       const jsonData = {
         name: "chapter",
-        value: chapter
+        value: this.chapterIndex
       };
       this.socket.send(JSON.stringify(jsonData));
     },
-    startChapter(chapter) {
+    startChapter() {
       const jsonData = {
         name: "story",
-        value: chapter
+        value: this.chapterIndex
       };
       this.socket.send(JSON.stringify(jsonData));
     },

@@ -2,22 +2,42 @@
 <template>
   <div>
     <div class="imgDiv">
+     <img src="/images/mask.png" id="mask"> 
      <img :src="imgSrc" alt="Discover Nuxt 3" id="backgroundImg" :style="`left:-${time}vw`"/>
+     <div :style="`opacity: ${transitionOpacity}`">
+      <video class="transition" muted>
+        <source src="/images/TRANSITION.webm" type="video/mp4">
+      </video>
+     </div>
      <div style="width:3840px">
       <div v-if="animAuto.length !== 0">
         <div v-for="anim in animAuto" :key="anim.time" :id="anim.time" class="vAnim">
-          <video :class="anim.class" autoplay muted loop :style="anim.style ? `left:-${time - anim.time}vw` : ''">
+          <img v-if="anim.image" :src="anim.image" :class="anim.class" :style="anim.style ? `left:-${time - anim.time}vw` : ''">
+          <video v-if="anim.video" :class="anim.class" autoplay muted loop :style="anim.style ? `left:-${time - anim.time}vw` : ''">
               <source :src="anim.video" type="video/mp4">
           </video>
         </div>
       </div>
     </div>
     </div>
-    <div id="visual" :style="`opacity: ${visualOpacity}`"></div>
-    <div id="audio" :style="`opacity: ${audioOpacity}`"></div>
-    <div v-if="interaction && visualOpacity === 1">
+    <div id="visual" :style="`opacity: ${visualOpacity}`">
+      <video class="interactSignal" autoplay muted loop>
+        <source src="/images/OEIL.webm" type="video/mp4">
+      </video>
+    </div>
+    <div id="audio" :style="`opacity: ${audioOpacity}`">
+      <video class="interactSignal" autoplay muted loop>
+        <source src="/images/OREILLE.webm" type="video/mp4">
+      </video>
+    </div>
+    <div id="demo" :style="`opacity: ${demoOpacity}`">
+      <video class="interactSignal" autoplay muted loop>
+        <source src="/images/OEIL.webm" type="video/mp4">
+      </video>
+    </div>
+    <div v-if="interaction && visual">
       <template v-for="i in visualInteract" :key="i.id">
-        <div :style="`left:${leftP}%`" :class="i.class" :id="i.id">
+        <div :style="i.style" :class="i.class" :id="i.id">
           <video :style="`width:${animWidth}%`" autoplay muted loop >
             <source :src="i.video" type="video/mp4">
           </video>
@@ -31,29 +51,29 @@
 export default {
   data() {
     return {
-      chapter: 3,
-      imgSrc: "/images/chapters/3.png",
-      interaction: true,
+      chapter: 0,
+      imgSrc: "/images/chapters/0.png",
+      interaction: false,
       storyStarted: false,
       connectionJson: {
         name: 'connection',
         value: 'projector'
       },
       time: 0,
-      maxTime: 75,
-      visualOpacity: 1,
+      maxTime: 100,
+      visualOpacity: 0,
       audioOpacity: 0,
-      visualInteract: [{
-          id: 1,
-          class: `visualI chapter3`,
-          video: `/images/chapters/chapter-${3}/${1}.webm`
-        }],
+      visualInteract: [],
       instumentUsed: {},
       leftP: 0,
-      animWidth: 75,
+      animWidth: 100,
       animAuto: [],
       animAutoTime: [],
-      chapter4Visu: 0
+      chapterVisu: 0,
+      socket : null,
+      visual: false,
+      transitionOpacity: 0,
+      demo:false
     }
   },
   watch: {
@@ -65,7 +85,11 @@ export default {
             anim.style.opacity = 1
           }
           setTimeout(() => {
-            this.time += 0.25
+            if (this.chapter === 1 || this.chapter === 5) {
+              this.time += 0.5
+            } else {
+              this.time += 0.25
+            }
           }, 250)
         }
       },
@@ -74,33 +98,29 @@ export default {
   },
   async mounted() {
     // Connectez-vous au WebSocket ici
-    const socket = new WebSocket('ws://localhost:3001'); // Remplacez l'URL par celle de votre serveur WebSocket
+    this.socket = new WebSocket('ws://localhost:3001'); // Remplacez l'URL par celle de votre serveur WebSocket
     
-    socket.addEventListener('open', (event) => {
-      console.log('WebSocket ouvert');
-      socket.send(JSON.stringify(this.connectionJson))
+    this.socket.addEventListener('open', (event) => {
+      this.socket.send(JSON.stringify(this.connectionJson))
     });
 
-    socket.addEventListener('message', (event) => {
-      console.log('Message reçu:', event.data);
+    this.socket.addEventListener('message', (event) => {
       const data = this.stringToJson(event.data)
       this.handleInfo(data)
     });
 
-    socket.addEventListener('close', (event) => {
+    this.socket.addEventListener('close', (event) => {
       console.log('WebSocket fermé');
     });
 
-    socket.addEventListener('error', (event) => {
+    this.socket.addEventListener('error', (event) => {
       console.error('Erreur WebSocket:', event);
     })
-    console.log("hey")
   },
   methods: {
     stringToJson(string) {
       try {
         var jsonObj = JSON.parse(string);
-        console.log(jsonObj)
         return jsonObj
       } catch (error) {
         console.error('Erreur lors de la conversion en JSON :', error.message);
@@ -114,6 +134,7 @@ export default {
           this.audioOpacity = 0
           this.visualOpacity = 0
           this.visualInteract = []
+          this.visual = false
           this.time ++
         } else { 
           if (typeof data.value === "object") {
@@ -125,10 +146,15 @@ export default {
           }
           if (data.value === 'visual') {
             this.visualOpacity = 1
+            this.visual = true
             this.visualInteract = []
-            if (this.chapter == 4) {
-              this.chapter4Visu += 1
-              this.chapter = this.chapter4Visu === 2 ? 45 : 4
+            if ([4, 10, 12, 15, 18, 20, 23, 26].includes(this.chapter)) {
+              this.chapterVisu += 1
+              this.chapter = this.chapterVisu === 2 ? parseInt(`${this.chapter}5`) : this.chapter
+            }
+            if ([3, 22, 25].includes(this.chapter)) {
+              this.animAuto = this.animAuto.slice(-1)
+              this.animAutoTime = this.animAutoTime.slice(-1)
             }
           }
         }
@@ -140,34 +166,67 @@ export default {
         this.time = 1
       }
       if (data.name === "rpi" && data.hasOwnProperty("idInput")) {
+        if (this.interaction) {
+          this.visualOpacity = 0
+          this.audioOpacity = 0
+        }
         this.addVisualIntend(data.idInput)
       }
       if (data.name === 'chapter') {
+        var transition = document.getElementsByClassName("transition")[0]
+        transition.currentTime = 0
+        this.transitionOpacity = 1
+        transition.play()
+        setTimeout(() => {
+            this.time = 0
+            this.imgSrc = `/images/chapters/${this.chapter}.png`
+            console.log("hey")
+        }, 3000)
+        setTimeout(() => {
+            this.transitionOpacity = 0
+        }, 7000)
         this.storyStarted = false
-        this.time = 0
         this.chapter = data.value
-        this.imgSrc = `/images/chapters/${this.chapter}.png`
         this.animAuto = []
         this.animAutoTime = []
-        if (data.value === "2") {
-          this.animAuto = [{video: `/images/chapters/chapter-${this.chapter}/end.webm`, time:65, class: "emp"}]
-          this.animAutoTime = [65]
+        var dataInt = parseInt(data.value)
+        if ([2, 6, 8, 13, 16, 19, 21, 24].includes(dataInt)) {
+          this.animAuto = [{video: `/images/chapters/chapter-${this.chapter}/end.webm`, time:60, class: "emp"}]
+          this.animAutoTime = [60]
         }
-        if (data.value === "4") {
-          this.chapter4Visu = 0
-          this.animAuto = [{video: `/images/chapters/chapter-${this.chapter}/lueeur.webm`, time:55, class: "lue" , style:`left:-${this.time}vw`}]
-          this.animAutoTime = [55]
+        if ([4, 10, 12, 15, 18, 20, 23, 26].includes(dataInt)) {
+          this.chapterVisu = 0
         }
-        if (data.value === "3") {
-          this.animAuto = [{video: `/images/chapters/chapter-${this.chapter}/lulu.webm`, time:65, class: "lulu" }]
-          this.animAutoTime = [65]
+        if ([3, 22].includes(dataInt)) {
+          this.animAuto = [{video: `/images/chapters/chapter-${this.chapter}/lulu.webm`, time:45, class: "lulu1" }, {image: `/images/chapters/chapter-${this.chapter}/lulu2.png`, time:65, class: "lulu", style:true }]
+          this.animAutoTime = [45, 65]
+        }
+        if ([7, 17].includes(dataInt)) {
+          this.animAuto = [{image: `/images/chapters/chapter-${this.chapter}/animal1.png`, time:25, class: "animal1", style:true }, {image: `/images/chapters/chapter-${this.chapter}/animal2.png`, time:25.5, class: "animal2", style:true }, {image: `/images/chapters/chapter-${this.chapter}/animal3.png`, time:26, class: "animal3", style:true }]
+          this.animAutoTime = [25, 25.5, 26]
+        }
+        if ([11].includes(dataInt)) {
+          this.animAuto = [{image: `/images/chapters/chapter-${this.chapter}/animal1.png`, time:25, class: "animal1-b", style:true }, {image: `/images/chapters/chapter-${this.chapter}/animal2.png`, time:25.5, class: "animal2-b", style:true }, {image: `/images/chapters/chapter-${this.chapter}/animal3.png`, time:26, class: "animal3-b", style:true }]
+          this.animAutoTime = [25, 25.5, 26]
+        }
+        if ([14].includes(dataInt)) {
+          this.animAuto = [{image: `/images/chapters/chapter-${this.chapter}/animal1.png`, time:25, class: "animal1-again", style:true }, {image: `/images/chapters/chapter-${this.chapter}/animal2.png`, time:25.5, class: "animal2-again", style:true }]
+          this.animAutoTime = [25, 25.5]
+        }
+        if ([9].includes(dataInt)) {
+          this.animAuto = [{image: `/images/chapters/chapter-${this.chapter}/animal1.png`, time:25, class: "animal1-only", style:true }]
+          this.animAutoTime = [25]
+        }
+        if (dataInt === 25) {
+          this.animAuto = [{video: `/images/chapters/chapter-${this.chapter}/lulu.webm`, time:45, class: "lulu1" }, {image: `/images/chapters/chapter-${this.chapter}/animal1.png`, time:65, class: "animal1-b-s", style:true }, {image: `/images/chapters/chapter-${this.chapter}/animal2.png`, time:65.5, class: "animal2-b-s", style:true }, {image: `/images/chapters/chapter-${this.chapter}/animal3.png`, time:66, class: "animal3-b-s", style:true }]
+          this.animAutoTime = [45, 65, 65.5, 66]
         }
       }
       if (data.name === 'rover') {
-        this.leftP = (parseInt(data.value) / 2.0) * 100
+        this.leftP = (parseFloat(data.value) / 2.1) * 1920
+        console.log(this.leftP)
       }
-      if (data.name === 'connection') {
-        console.log('connection')
+      if (data.name === 'startStory') {
         this.time = 0
         this.storyStarted = 0
         this.chapter = 1
@@ -179,6 +238,9 @@ export default {
         this.instumentUsed = {}
         this.leftP = 0
       }
+      if (data.name === "demo") {
+
+      }
     },
     addToTravelling() {
       this.timer = 1
@@ -186,13 +248,14 @@ export default {
     addVisualIntend(idInput) {
       if (this.instumentUsed.hasOwnProperty(idInput)) {
         let videoId = 1
-        if (["turnSphero"].includes(idInput)) {
+        if (["turnSphero", "button1", "rotocoder"].includes(idInput)) {
           videoId = 2
         }
         this.visualInteract.push({
           id: this.visualInteract.length + 1,
-          class: `visualI chapter${this.chapter}`,
+          class: `visualI chapter${this.chapter} type${videoId}-${this.chapter}`,
           video: `/images/chapters/chapter-${this.chapter}/${videoId}.webm`,
+          style: this.getRandomTopLeft()
         })
         this.anim()
       }
@@ -200,11 +263,18 @@ export default {
     anim() {
       let allVisu = document.getElementsByClassName("visualI")
       let lastVisu = allVisu[allVisu.length - 1]
-      console.log(allVisu, lastVisu)
-      lastVisu.style.opacity = 1
-      setTimeout(() => {
-          lastVisu.style.opacity = 0
-      }, 3000)
+      if (lastVisu !== undefined) {
+        lastVisu.style.opacity = 1
+        setTimeout(() => {
+            lastVisu.style.opacity = 0
+        }, 2000)
+      }
+    },
+
+    getRandomTopLeft() {
+      let top = Math.floor(Math.random() * 200)
+      let left = Math.floor(Math.random() * 200) + this.leftP
+      return `margin-top: ${top}px;margin-left: ${left}px`
     }
   }
 };
@@ -225,10 +295,17 @@ body{
   z-index: 0;
 }
 
+#mask {
+  height: 100vh;
+  width: 100vw;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 2;
+}
+
 #visual {
   position: relative;
-  width: 50px;
-  height: 50px;
   background-color: blue;
   transition: all 0.5s linear;
   z-index:1;
@@ -236,8 +313,6 @@ body{
 
 #audio {
   position: relative;
-  width: 50px;
-  height: 50px;
   background-color: green;
   transition: all 0.5s linear;
   z-index: 1;
@@ -245,6 +320,7 @@ body{
 
 .visualI {
   position:absolute;
+  top: 10%;
   z-index: 2;
   width: 100%;
   height: 100%;
@@ -252,38 +328,32 @@ body{
   opacity: 0;
 }
 
+.interactSignal {
+  width: 100vw;
+  left: 0;
+  height: 100vh;
+  top: 0;
+}
+
+.transition {
+  width: 100vw;
+  left: 0;
+  height: 100vh;
+  top: 0;
+  z-index: 3;
+}
+
 video {
   position: absolute;
   width: 75%;
-}
-
-.turnSphero {
-  background-color: aquamarine;
-}
-
-.tapSphero {
-  background-color: cornflowerblue;
-}
-.button1 {
-  background-color: violet;
-}
-
-.button2 {
-  background-color: cadetblue;
-}
-
-.rotocoder {
-  background-color: crimson;
-}
-
-.micro {
-  background-color: gold;
+  left: -50%;
+  transition: all 1s;
 }
 
 .emp {
-  right: -10%;
+  left: 35%;
   bottom: 0;
-  opacity: 0;
+  transition: all 1s;
 }
 
 .lue {
@@ -291,11 +361,15 @@ video {
 }
 
 .chapter4 {
-  top: -25%;
+  top: -35%;
+}
+
+.type2-4 {
+  width: 60%;
 }
 
 .chapter45 {
-  top: -25%;
+  top: -5%;
 }
 
 .vAnim {
@@ -307,6 +381,110 @@ video {
 }
 
 .lulu {
+  position: absolute;
+  top:25%;
+  left: 35%;
+  margin-left: 60vw;
+  transition: left 0.5s;
+}
+
+.animal1 {
+  position: absolute;
+  top:25%;
+  margin-left: 35vw;
+  transition: left 0.5s;
+}
+
+.animal2 {
+  position: absolute;
+  top:25%;
+  margin-left: 53vw;
+  transition: left 0.5s;
+}
+
+.animal3 {
+  position: absolute;
+  top:25%;
+  margin-left: 65vw;
+  transition: left 0.5s;
+}
+
+.animal1-b {
+  position: absolute;
+  top:70%;
+  margin-left: 35vw;
+  transition: left 0.5s;
+}
+
+.animal2-b {
+  position: absolute;
+  top:70%;
+  margin-left: 53vw;
+  transition: left 0.5s;
+}
+
+.animal3-b {
+  position: absolute;
+  top:70%;
+  margin-left: 65vw;
+  transition: left 0.5s;
+}
+
+.animal1-b-s {
+  position: absolute;
+  top:70%;
+  margin-left: 35vw;
+  transition: left 0.5s;
+  width: 30vw;
+}
+
+.animal2-b-s {
+  position: absolute;
+  top:70%;
+  margin-left: 53vw;
+  transition: left 0.5s;
+  width:30vw;
+}
+
+.animal3-b-s {
+  position: absolute;
+  top:70%;
+  margin-left: 65vw;
+  transition: left 0.5s;
+  width: 30vw;
+}
+
+.vAnim {
+  transition: all 1s;
+}
+
+.lulu1 {
   top:0;
+  left: 35%;
+  width: 60%;
+}
+
+.animal1-again {
+  position: absolute;
+  top:25%;
+  margin-left: 35vw;
+  transition: left 0.5s;
+  width: 20vw;
+}
+
+.animal2-again {
+  position: absolute;
+  top:45%;
+  margin-left: 53vw;
+  transition: left 0.5s;
+  width: 30vw;
+}
+
+.animal1-only {
+  position: absolute;
+  top:55%;
+  margin-left: 35vw;
+  transition: left 0.5s;
+  width: 20vw;
 }
 </style>

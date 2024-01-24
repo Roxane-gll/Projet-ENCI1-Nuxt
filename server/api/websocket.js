@@ -21,11 +21,11 @@ wss.on('connection', (ws) => {
         }
       )
       if (data.value === 'sphero') {
-        broadcast(message)
+        broadcast(message, ws)
       }
     } else if (typeof data === 'object') {
       // Diffuser le message à tous les clients connectés
-      broadcast(message);
+      broadcast(message, ws);
     }
     
     
@@ -41,15 +41,14 @@ wss.on('connection', (ws) => {
       }
       return obj.ws != ws
     })
-    console.log(clientsT)
   });
 });
 
 // Fonction pour diffuser un message à tous les clients connectés
-function broadcast(message) {
+function broadcast(message, wsSender) {
   clientsT.forEach((client) => {
     // Vérifier si le client est toujours connecté avant d'envoyer le message
-    if (client.ws.readyState === WebSocket.OPEN) {
+    if (client.ws.readyState === WebSocket.OPEN && client.ws !== wsSender) {
       client.ws.send(message);
     }
   })
