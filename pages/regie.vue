@@ -31,7 +31,7 @@
     </div>
     <br>
     <div class="flex">
-      <input :v-model="chapter">
+      <input type="number" v-model="chapterIndex">
       <button class="btn btn-primary" @click="goToChapter()">GoToChapter</button>
       <button class="btn btn-primary" @click="startChapter()">StartChapter</button>
     </div>
@@ -63,8 +63,12 @@ export default {
         rotocoder: true,
         micro: true
       },
+      connectionJson: {
+        name: 'connection',
+        value: 'regie'
+      },
       sliderValue: 0,
-      chapter: 0
+      chapterIndex: 0
     };
   },
   async mounted() {
@@ -73,7 +77,7 @@ export default {
     
     this.socket.addEventListener('open', (event) => {
       console.log('WebSocket ouvert');
-      this.socket.send(JSON.stringify(this.connectionJson))
+      //this.socket.send(JSON.stringify(this.connectionJson))
     });
 
     this.socket.addEventListener('message', (event) => {
@@ -117,16 +121,17 @@ export default {
       this.socket.send(JSON.stringify(jsonData));
     },
     goToChapter() {
+      console.log(this.chapterIndex)
       const jsonData = {
         name: "chapter",
-        value: this.chapter
+        value: this.chapterIndex
       };
       this.socket.send(JSON.stringify(jsonData));
     },
     startChapter() {
       const jsonData = {
         name: "story",
-        value: this.chapter
+        value: this.chapterIndex
       };
       this.socket.send(JSON.stringify(jsonData));
     },
@@ -143,6 +148,9 @@ export default {
         value: "true"
       };
       this.socket.send(JSON.stringify(jsonData));
+    },
+    handleInfo(data) {
+      console.log(data)
     }
   }
 };

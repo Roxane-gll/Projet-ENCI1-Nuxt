@@ -4,6 +4,11 @@
     <div class="imgDiv">
      <img src="/images/mask.png" id="mask"> 
      <img :src="imgSrc" alt="Discover Nuxt 3" id="backgroundImg" :style="`left:-${time}vw`"/>
+     <div :style="`opacity: ${transitionOpacity}`">
+      <video class="transition" muted>
+        <source src="/images/TRANSITION.webm" type="video/mp4">
+      </video>
+     </div>
      <div style="width:3840px">
       <div v-if="animAuto.length !== 0">
         <div v-for="anim in animAuto" :key="anim.time" :id="anim.time" class="vAnim">
@@ -15,9 +20,22 @@
       </div>
     </div>
     </div>
-    <div id="visual" :style="`opacity: ${visualOpacity}`"></div>
-    <div id="audio" :style="`opacity: ${audioOpacity}`"></div>
-    <div v-if="interaction && visualOpacity === 1">
+    <div id="visual" :style="`opacity: ${visualOpacity}`">
+      <video class="interactSignal" autoplay muted loop>
+        <source src="/images/OEIL.webm" type="video/mp4">
+      </video>
+    </div>
+    <div id="audio" :style="`opacity: ${audioOpacity}`">
+      <video class="interactSignal" autoplay muted loop>
+        <source src="/images/OREILLE.webm" type="video/mp4">
+      </video>
+    </div>
+    <div id="demo" :style="`opacity: ${demoOpacity}`">
+      <video class="interactSignal" autoplay muted loop>
+        <source src="/images/OEIL.webm" type="video/mp4">
+      </video>
+    </div>
+    <div v-if="interaction && visual">
       <template v-for="i in visualInteract" :key="i.id">
         <div :style="i.style" :class="i.class" :id="i.id">
           <video :style="`width:${animWidth}%`" autoplay muted loop >
@@ -33,9 +51,9 @@
 export default {
   data() {
     return {
-      chapter: 3,
-      imgSrc: "/images/chapters/2.png",
-      interaction: true,
+      chapter: 0,
+      imgSrc: "/images/chapters/0.png",
+      interaction: false,
       storyStarted: false,
       connectionJson: {
         name: 'connection',
@@ -43,21 +61,19 @@ export default {
       },
       time: 0,
       maxTime: 100,
-      visualOpacity: 1,
+      visualOpacity: 0,
       audioOpacity: 0,
-      visualInteract: [{
-          id: 1,
-          class: `visualI chapter2`,
-          video: `/images/chapters/chapter-${2}/${1}.webm`,
-          style: `margin-top: 5px;margin-left: 8px`
-        }],
+      visualInteract: [],
       instumentUsed: {},
       leftP: 0,
       animWidth: 100,
       animAuto: [],
       animAutoTime: [],
       chapterVisu: 0,
-      socket : null
+      socket : null,
+      visual: false,
+      transitionOpacity: 0,
+      demo:false
     }
   },
   watch: {
@@ -118,6 +134,7 @@ export default {
           this.audioOpacity = 0
           this.visualOpacity = 0
           this.visualInteract = []
+          this.visual = false
           this.time ++
         } else { 
           if (typeof data.value === "object") {
@@ -129,6 +146,7 @@ export default {
           }
           if (data.value === 'visual') {
             this.visualOpacity = 1
+            this.visual = true
             this.visualInteract = []
             if ([4, 10, 12, 15, 18, 20, 23, 26].includes(this.chapter)) {
               this.chapterVisu += 1
@@ -148,13 +166,27 @@ export default {
         this.time = 1
       }
       if (data.name === "rpi" && data.hasOwnProperty("idInput")) {
+        if (this.interaction) {
+          this.visualOpacity = 0
+          this.audioOpacity = 0
+        }
         this.addVisualIntend(data.idInput)
       }
       if (data.name === 'chapter') {
+        var transition = document.getElementsByClassName("transition")[0]
+        transition.currentTime = 0
+        this.transitionOpacity = 1
+        transition.play()
+        setTimeout(() => {
+            this.time = 0
+            this.imgSrc = `/images/chapters/${this.chapter}.png`
+            console.log("hey")
+        }, 3000)
+        setTimeout(() => {
+            this.transitionOpacity = 0
+        }, 7000)
         this.storyStarted = false
-        this.time = 0
         this.chapter = data.value
-        this.imgSrc = `/images/chapters/${this.chapter}.png`
         this.animAuto = []
         this.animAutoTime = []
         var dataInt = parseInt(data.value)
@@ -206,6 +238,9 @@ export default {
         this.instumentUsed = {}
         this.leftP = 0
       }
+      if (data.name === "demo") {
+
+      }
     },
     addToTravelling() {
       this.timer = 1
@@ -232,7 +267,7 @@ export default {
         lastVisu.style.opacity = 1
         setTimeout(() => {
             lastVisu.style.opacity = 0
-        }, 1000)
+        }, 2000)
       }
     },
 
@@ -271,8 +306,6 @@ body{
 
 #visual {
   position: relative;
-  width: 50px;
-  height: 50px;
   background-color: blue;
   transition: all 0.5s linear;
   z-index:1;
@@ -280,8 +313,6 @@ body{
 
 #audio {
   position: relative;
-  width: 50px;
-  height: 50px;
   background-color: green;
   transition: all 0.5s linear;
   z-index: 1;
@@ -295,6 +326,21 @@ body{
   height: 100%;
   transition: all 2s;
   opacity: 0;
+}
+
+.interactSignal {
+  width: 100vw;
+  left: 0;
+  height: 100vh;
+  top: 0;
+}
+
+.transition {
+  width: 100vw;
+  left: 0;
+  height: 100vh;
+  top: 0;
+  z-index: 3;
 }
 
 video {
