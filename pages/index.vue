@@ -233,10 +233,10 @@ export default {
             this.transitionOpacity = 0
         }, 7000)
         this.storyStarted = false
-        this.chapter = data.value
         this.animAuto = []
         this.animAutoTime = []
         var dataInt = parseInt(data.value)
+        this.chapter = dataInt
         if ([2, 6, 8, 13, 16, 19, 21, 24].includes(dataInt)) {
           this.animAuto = [{video: `/images/chapters/chapter-${this.chapter}/end.webm`, time:60, class: "emp"}]
           this.animAutoTime = [60]
@@ -297,7 +297,7 @@ export default {
         }
         let randomTopLeft = this.getRandomTopLeft()
         if (this.chapter === 0) {
-          randomTopLeft = "`margin-top: 114px;margin-left: 500px`"
+          randomTopLeft = "`margin-top: 114px;margin-left: 1000px`"
         }
         this.visualInteract.push({
           id: this.visualInteract.length + 1,
