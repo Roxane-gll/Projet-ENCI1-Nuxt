@@ -31,6 +31,7 @@
     </div>
     <br>
     <div class="flex">
+      <p>{{ chapters }}</p>
       <input type="number" v-model="chapterIndex">
       <button class="btn btn-primary" @click="goToChapter()">GoToChapter</button>
       <button class="btn btn-primary" @click="startChapter()">StartChapter</button>
@@ -77,7 +78,8 @@ export default {
         value: 'regie'
       },
       sliderValue: 0,
-      chapterIndex: 0
+      chapterIndex: 0,
+      chapters : ""
     };
   },
   async mounted() {
@@ -93,7 +95,7 @@ export default {
     this.socket.addEventListener('message', (event) => {
       console.log('Message reçu:', event.data);
       const data = this.stringToJson(event.data)
-      //this.handleInfo(data)
+      this.handleInfo(data)
     });
 
     this.socket.addEventListener('close', (event) => {
@@ -216,6 +218,15 @@ export default {
         };
         this.socketRover.send(JSON.stringify(this.jsonDataRoverGetPosition));
     },
+
+
+
+    handleInfo(data){
+      if(data.name == "chapters"){
+        this.chapters = data.value
+      }
+    },
+
   }
 };
 </script>
