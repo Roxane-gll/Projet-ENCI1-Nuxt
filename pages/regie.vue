@@ -52,6 +52,7 @@
       <button class="btn btn-primary" @click="rover_stop()">rover stop</button>
       <button class="btn btn-primary" @click="rover_home()">rover home</button>
       <button class="btn btn-primary" @click="rover_get_position()">rover get position</button>
+      <button class="btn btn-primary" @click="rover_uturn()">rover uturn</button>
     </div>
     <br>
     <div>
@@ -217,6 +218,13 @@ export default {
           action: "getPosition",
         };
         this.socketRover.send(JSON.stringify(this.jsonDataRoverGetPosition));
+    },
+    rover_uturn(){
+      this.jsonDataRoverUturn = {
+          name:"action",
+          action: "uturn",
+        };
+        this.socketRover.send(JSON.stringify(this.jsonDataRoverUturn));
     },
 
 
