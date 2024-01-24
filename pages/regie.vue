@@ -167,10 +167,6 @@ export default {
         value: this.chapterIndex
       };
       this.socket.send(JSON.stringify(jsonData));
-      if (this.currentChapter === 1) {
-        let audioP = new Audio(`/all_sounds/backgroundMusic/start-chapter-end.wav`)
-        audioP.play()
-      }
       this.currentChapter = this.chapterIndex
       var audio = document.getElementById("backgroundAudio")
       audio.pause()
@@ -265,6 +261,12 @@ export default {
           action: "uturn",
         };
         this.socketRover.send(JSON.stringify(this.jsonDataRoverUturn));
+    },
+    bruit_porte(){
+      if (this.currentChapter === 1) {
+        let audioP = new Audio(`/all_sounds/backgroundMusic/start-chapter-end.wav`)
+        audioP.play()
+      }
     },
 
 
