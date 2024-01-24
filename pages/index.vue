@@ -169,7 +169,7 @@ export default {
           if (this.chapter === 0) {
             console.log(this.instumentUsed)
             var used = Object.keys(this.instumentUsed).find(
-              key => this.instumentUsed[key] === true
+              key => this.instumentUsed[key] === true || this.instumentUsed[key] === "true"
             )
             this.allDemo[used] = 1
             if (data.value === "visual") {
@@ -276,7 +276,7 @@ export default {
       if (data.name === 'startStory') {
         this.time = 0
         this.storyStarted = 0
-        this.chapter = 1
+        this.chapter = 0
         this.imgSrc = `/images/chapters/${this.chapter}.png`
         this.interaction = false
         this.visualOpacity = 0
@@ -284,6 +284,13 @@ export default {
         this.visualInteract = []
         this.instumentUsed = {}
         this.leftP = 0
+        this.allDemo = {
+          turnSphero: 0,
+          tapSphero: 0,
+          micro: 0,
+          button1: 0,
+          button2: 0
+        }
       }
     },
     addToTravelling() {
@@ -379,6 +386,7 @@ body{
 
 .chapter0 {
   width: 40vw;
+  left:80%;
 }
 
 .interactSignal {
