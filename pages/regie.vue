@@ -122,7 +122,7 @@ export default {
     sendTabletteMusicaleMessage(id) {
       // Envoyez l'ID du bouton au serveur WebSocket
       this.socket.send(JSON.stringify({'name': 'rpi', 'idInput': id, "value": "true" }));
-      if (this.interact === "audio") {
+      if (this.interact === "audio" && this.currentChapter != 0) {
         let soundName = "p"
         if ([2, 6, 8, 13, 16, 19, 21, 24].includes(this.currentChapter)) {
           soundName = "e"
@@ -131,6 +131,12 @@ export default {
         }
         let audio = new Audio(`/all_sounds/${soundName}-sound/${soundName}-${id}.mp3`)
         audio.play()
+      }
+      if ([0].includes(this.currentChapter) && ["button2", "micro", "turnSphero"].includes(id)) {
+          let soundName = "d"
+          let audio = new Audio(`/all_sounds/${soundName}-sound/${soundName}-${id}.wav`)
+          if(audio != null)
+            audio.play()
       }
     },
     generateJson() {
