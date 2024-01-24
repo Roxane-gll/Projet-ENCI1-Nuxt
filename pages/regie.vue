@@ -157,6 +157,7 @@ export default {
     },
     goToChapter() {
       console.log(this.chapterIndex)
+      console.log("in go to chapter")
       const jsonData = {
         name: "chapter",
         value: this.chapterIndex
@@ -169,6 +170,7 @@ export default {
       this.currentChapter = this.chapterIndex
       var audio = document.getElementById("backgroundAudio")
       audio.pause()
+      console.log(this.currentChapter)
       this.backgroundSound = `/all_sounds/backgroundMusic/${this.currentChapter}.mp3`
     },
     startChapter() {
@@ -178,6 +180,8 @@ export default {
       };
       this.socket.send(JSON.stringify(jsonData));
       var audio = document.getElementById("backgroundAudio")
+      console.log(this.backgroundSound)
+      audio.setAttribute("src", this.backgroundSound)
       audio.play()
     },
     sendRoverPosition(position) {
