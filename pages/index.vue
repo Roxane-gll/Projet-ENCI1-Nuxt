@@ -169,10 +169,11 @@ export default {
           if (this.chapter === 0) {
             console.log(this.instumentUsed)
             var used = Object.keys(this.instumentUsed).find(
-              key => this.instumentUsed[key] === true
+              key => this.instumentUsed[key] === true || this.instumentUsed[key] === "true"
             )
             this.allDemo[used] = 1
             if (data.value === "visual") {
+              console.log("huhuhuh")
               this.visual = true
               this.visualInteract = []
             }
@@ -305,7 +306,7 @@ export default {
           video: `/images/chapters/chapter-${this.chapter}/${videoId}.webm`,
           style: randomTopLeft
         })
-        console.log(this.visualInteract)
+        console.log(randomTopLeft)
         this.anim()
       }
     },
@@ -379,6 +380,8 @@ body{
 
 .chapter0 {
   width: 40vw;
+  left:50%;
+  top:27%;
 }
 
 .interactSignal {

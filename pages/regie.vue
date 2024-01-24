@@ -26,8 +26,11 @@
             <input type="radio" id="chapter2" name="chapter" value="audio" v-model="selectedInteractionType">
             <label for="chapter2">Audio</label>
           </div>
-        <button class="btn btn-primary" @click="generateJson">Lancer interaction</button>
-        <button class="btn btn-primary" @click="allumerLeds">Allumer leds</button>
+          <div class="flex">
+            <button class="btn btn-primary" @click="generateJson">Lancer interaction</button>
+            <button class="btn btn-primary" @click="bruit_porte">Porte</button>
+            <button class="btn btn-primary" @click="allumerLeds">Allumer leds</button>
+          </div>
       </div>
     </div>
     <div>
