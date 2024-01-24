@@ -1,7 +1,7 @@
 <template>
   <div class="tablette_musicale">
     <audio loop id="backgroundAudio">
-      <source :src="`/all_sounds/backgroundMusic/${this.currentChapter}.mp3`">
+      <source :src="backgroundSound">
     </audio>
     <div class="flex">
       <button v-on:click="sendTabletteMusicaleMessage('turnSphero')" class="btn btn-primary">turnSphero</button>
