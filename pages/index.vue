@@ -3,7 +3,7 @@
   <div>
     <div class="imgDiv">
      <img src="/images/mask.png" id="mask"> 
-     <img :src="imgSrc" alt="Discover Nuxt 3" id="backgroundImg" :style="`left:-${time}vw`"/>
+     <img :src="imgSrc" alt="Discover Nuxt 3" id="backgroundImg" :style="chapter !== 0 ? `left:-${time}vw` : ''"/>
      <div :style="`opacity: ${transitionOpacity}`">
       <video class="transition" muted>
         <source src="/images/TRANSITION.webm" type="video/mp4">
@@ -172,6 +172,10 @@ export default {
               key => this.instumentUsed[key] === true
             )
             this.allDemo[used] = 1
+            if (data.value === "visual") {
+              this.visual = true
+              this.visualInteract = []
+            }
           }
           if (typeof data.value === "object") {
             this.instumentUsed = data.value
@@ -286,20 +290,22 @@ export default {
       this.timer = 1
     },
     addVisualIntend(idInput) {
-      console.log(idInput)
       if (this.instumentUsed.hasOwnProperty(idInput)) {
         let videoId = 1
         if (["turnSphero", "button1", "rotocoder"].includes(idInput)) {
           videoId = 2
         }
         let randomTopLeft = this.getRandomTopLeft()
-        console.log(randomTopLeft)
+        if (this.chapter === 0) {
+          randomTopLeft = "`margin-top: 114px;margin-left: 500px`"
+        }
         this.visualInteract.push({
           id: this.visualInteract.length + 1,
           class: `visualI chapter${this.chapter} type${videoId}-${this.chapter}`,
           video: `/images/chapters/chapter-${this.chapter}/${videoId}.webm`,
           style: randomTopLeft
         })
+        console.log(this.visualInteract)
         this.anim()
       }
     },
@@ -369,6 +375,10 @@ body{
   height: 100%;
   transition: all 2s;
   opacity: 0;
+}
+
+.chapter0 {
+  width: 40vw;
 }
 
 .interactSignal {
