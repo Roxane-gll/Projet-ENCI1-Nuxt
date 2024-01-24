@@ -26,7 +26,8 @@
             <input type="radio" id="chapter2" name="chapter" value="audio" v-model="selectedInteractionType">
             <label for="chapter2">Audio</label>
           </div>
-        <button class="btn btn-primary" @click="generateJson">Générer JSON</button>
+        <button class="btn btn-primary" @click="generateJson">Lancer interaction</button>
+        <button class="btn btn-primary" @click="allumerLeds">Allumer leds</button>
       </div>
     </div>
     <div>
@@ -87,7 +88,8 @@ export default {
       chapterPassed: 0,
       currentChapter: 1,
       interact: "",
-      backgroundSound: "/all_sounds/backgroundMusic/1.mp3"
+      backgroundSound: "/all_sounds/backgroundMusic/1.mp3",
+      checkboxesState: false
     };
   },
   async mounted() {
@@ -132,22 +134,26 @@ export default {
       }
     },
     generateJson() {
-      const jsonData = {
-        name: "interact",
-        value: JSON.parse(JSON.stringify(this.checkboxes))
-      };
-      this.socket.send(JSON.stringify(jsonData));
+      this.allumerLeds()
       const jsonData2 = {
         name: "interact",
         value: this.selectedInteractionType
       };
       this.socket.send(JSON.stringify(jsonData2));
       this.rover_stop()
+      this.rover_get_position()
       var audioT = document.getElementById("backgroundAudio")
       audioT.volume = 0.10
       this.interact = this.selectedInteractionType
       let audio = new Audio(`/all_sounds/backgroundMusic/Signal.mp3`)
       audio.play()
+    },
+    allumerLeds(){
+      const jsonData = {
+        name: "interact",
+        value: JSON.parse(JSON.stringify(this.checkboxes))
+      };
+      this.socket.send(JSON.stringify(jsonData));
     },
     stopInteractions() {
       var audio = document.getElementById("backgroundAudio")
@@ -157,6 +163,7 @@ export default {
         value: "false"
       };
       this.rover_go()
+      this.turn_off_leds()
       this.socket.send(JSON.stringify(jsonData));
     },
     goToChapter() {
@@ -274,6 +281,18 @@ export default {
         let audioP = new Audio(`/all_sounds/backgroundMusic/start-chapter-end.wav`)
         audioP.play()
       }
+    },
+    toggle_checkboxes(){
+      this.checkboxesState = !this.checkboxesState
+      for (const [key, value] of Object.entries(this.checkboxes)) {
+        this.checkboxes[key] = this.checkboxesState
+      }
+    },
+    turn_off_leds(){
+      for (const [key, value] of Object.entries(this.checkboxes)) {
+        this.checkboxes[key] = false
+      }
+      this.allumerLeds()
     },
 
 
