@@ -317,6 +317,9 @@ export default {
       if (data.name == "chapter") {
         var chapInt = parseInt(data.value)
         this.currentChapter = chapInt
+        var audio = document.getElementById("backgroundAudio")
+        audio.setAttribute("src", this.backgroundSound)
+        audio.pause()
       }
       if (data.name == "rpi") {
         if ([0].includes(this.currentChapter) && ["button2", "micro", "turnSphero"].includes(data.idInput)) {
