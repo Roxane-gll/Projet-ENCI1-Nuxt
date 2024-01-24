@@ -135,6 +135,7 @@ export default {
         let audio = new Audio(`/all_sounds/${soundName}-sound/${soundName}-${id}.mp3`)
         audio.play()
       }
+      
       if ([0].includes(this.currentChapter) && ["button2", "micro", "turnSphero"].includes(id)) {
           let soundName = "d"
           let audio = new Audio(`/all_sounds/${soundName}-sound/${soundName}-${id}.wav`)

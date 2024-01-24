@@ -192,6 +192,10 @@ export default {
           this.interaction = true
           if (data.value === 'audio' && this.chapter !== 0) {
             this.audioOpacity = 1
+            if ([3, 22, 25].includes(this.chapter)) {
+              this.animAuto = this.animAuto.slice(-1)
+              this.animAutoTime = this.animAutoTime.slice(-1)
+            }
           }
           if (data.value === 'visual' && this.chapter !== 0) {
             this.visualOpacity = 1
@@ -201,10 +205,10 @@ export default {
               this.chapterVisu += 1
               this.chapter = this.chapterVisu === 2 ? parseInt(`${this.chapter}5`) : this.chapter
             }
-            if ([3, 22, 25].includes(this.chapter)) {
+            /* if ([3, 22, 25].includes(this.chapter)) {
               this.animAuto = this.animAuto.slice(-1)
               this.animAutoTime = this.animAutoTime.slice(-1)
-            }
+            } */
           }
         }
       }
@@ -236,7 +240,6 @@ export default {
         setTimeout(() => {
             this.time = 0
             this.imgSrc = `/images/chapters/${this.chapter}.png`
-            console.log("hey")
         }, 3000)
         setTimeout(() => {
             this.transitionOpacity = 0
@@ -254,8 +257,8 @@ export default {
           this.chapterVisu = 0
         }
         if ([3, 22].includes(dataInt)) {
-          this.animAuto = [{video: `/images/chapters/chapter-${this.chapter}/lulu.webm`, time:45, class: "lulu1" }, {image: `/images/chapters/chapter-${this.chapter}/lulu2.png`, time:65, class: "lulu", style:true }]
-          this.animAutoTime = [45, 65]
+          this.animAuto = [{video: `/images/chapters/chapter-${this.chapter}/lulu.webm`, time:25, class: "lulu1" }, {image: `/images/chapters/chapter-${this.chapter}/lulu2.png`, time:65, class: "lulu", style:true }]
+          this.animAutoTime = [25, 65]
         }
         if ([7, 17].includes(dataInt)) {
           this.animAuto = [{image: `/images/chapters/chapter-${this.chapter}/animal1.png`, time:25, class: "animal1", style:true }, {image: `/images/chapters/chapter-${this.chapter}/animal2.png`, time:25.5, class: "animal2", style:true }, {image: `/images/chapters/chapter-${this.chapter}/animal3.png`, time:26, class: "animal3", style:true }]
@@ -339,9 +342,9 @@ export default {
     getRandomTopLeft() {
       let top = Math.floor(Math.random() * 200)
       let left = Math.floor(Math.random() * 200) + this.leftP
-      if (this.chapter === 4) {
+      if (this.chapter === 4 || this.chapter === 45) {
         top = Math.floor(Math.random() * 50)
-        left = Math.floor(Math.random() * 300) + this.leftP
+        left = Math.floor(Math.random() * 300)
       }
       return `margin-top: ${top}px;margin-left: ${left}px`
     }
@@ -436,7 +439,8 @@ video {
 }
 
 .chapter4 {
-  top: -35%;
+  top: -25%;
+  left: 50%;
 }
 
 .type2-4 {
@@ -453,7 +457,8 @@ video {
 }
 
 .chapter45 {
-  top: -25%;
+  top: -35%;
+  left: 50%;
 }
 
 .vAnim {
