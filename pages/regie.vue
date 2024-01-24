@@ -1,5 +1,8 @@
 <template>
   <div class="tablette_musicale">
+    <audio loop id="backgroundAudio">
+      <source :src="`/all_sounds/backgroundMusic/${this.currentChapter}.mp3`">
+    </audio>
     <div class="flex">
       <button v-on:click="sendTabletteMusicaleMessage('turnSphero')" class="btn btn-primary">turnSphero</button>
       <button v-on:click="sendTabletteMusicaleMessage('tapSphero')" class="btn btn-primary">tapSphero</button>
@@ -80,7 +83,10 @@ export default {
       },
       sliderValue: 0,
       chapterIndex: 0,
-      chapters : ""
+      chapters : "",
+      chapterPassed: 0,
+      currentChapter: 1,
+      interact: ""
     };
   },
   async mounted() {
@@ -113,6 +119,16 @@ export default {
     sendTabletteMusicaleMessage(id) {
       // Envoyez l'ID du bouton au serveur WebSocket
       this.socket.send(JSON.stringify({'name': 'rpi', 'idInput': id, "value": "true" }));
+      if (this.interact === "audio") {
+        let soundName = "p"
+        if ([2, 6, 8, 13, 16, 19, 21, 24].includes(this.currentChapter)) {
+          soundName = "e"
+        }else if ([4, 10, 12, 15, 18, 20, 23, 26].includes(this.currentChapter)) {
+          soundName = "t"
+        }
+        let audio = new Audio(`/all_sounds/${soundName}-sound/${soundName}-${id}.mp3`)
+        audio.play()
+      }
     },
     generateJson() {
       const jsonData = {
@@ -125,8 +141,13 @@ export default {
         value: this.selectedInteractionType
       };
       this.socket.send(JSON.stringify(jsonData2));
+      var audio = document.getElementById("backgroundAudio")
+      audio.volume = 0.10
+      this.interact = this.selectedInteractionType
     },
     stopInteractions() {
+      var audio = document.getElementById("backgroundAudio")
+      audio.volume = 1
       const jsonData = {
         name: "interact",
         value: "false"
@@ -140,6 +161,7 @@ export default {
         value: this.chapterIndex
       };
       this.socket.send(JSON.stringify(jsonData));
+      this.currentChapter = this.chapterIndex
     },
     startChapter() {
       const jsonData = {
@@ -147,6 +169,8 @@ export default {
         value: this.chapterIndex
       };
       this.socket.send(JSON.stringify(jsonData));
+      var audio = document.getElementById("backgroundAudio")
+      audio.play()
     },
     sendRoverPosition(position) {
       const jsonData = {
