@@ -142,6 +142,7 @@ export default {
         value: this.selectedInteractionType
       };
       this.socket.send(JSON.stringify(jsonData2));
+      this.rover_stop()
       var audioT = document.getElementById("backgroundAudio")
       audioT.volume = 0.10
       this.interact = this.selectedInteractionType
@@ -155,6 +156,7 @@ export default {
         name: "interact",
         value: "false"
       };
+      this.rover_go()
       this.socket.send(JSON.stringify(jsonData));
     },
     goToChapter() {
