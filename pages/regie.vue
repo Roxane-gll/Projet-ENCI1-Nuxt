@@ -145,6 +145,8 @@ export default {
       var audio = document.getElementById("backgroundAudio")
       audio.volume = 0.10
       this.interact = this.selectedInteractionType
+      let audio = new Audio(`/all_sounds/backgroundMusic/Signal.mp3`)
+      audio.play()
     },
     stopInteractions() {
       var audio = document.getElementById("backgroundAudio")
@@ -156,6 +158,8 @@ export default {
       this.socket.send(JSON.stringify(jsonData));
     },
     goToChapter() {
+      let audioT = new Audio(`/all_sounds/backgroundMusic/Transition.mp3`)
+      audioT.play()
       console.log(this.chapterIndex)
       const jsonData = {
         name: "chapter",
