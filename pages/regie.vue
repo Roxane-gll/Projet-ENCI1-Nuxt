@@ -209,22 +209,27 @@ export default {
       this.socketRover = new WebSocket('ws://192.168.43.205:8081');
 
       this.socketRover.addEventListener('open', (event) => {
-        console.log('WebSocket ouvert');
+        console.log('WebSocket Rover ouvert');
         // this.socketRover.send(JSON.stringify(this.connectionJson))
       });
 
       this.socketRover.addEventListener('message', (event) => {
         console.log('Message reçu:', event.data);
         const data = this.stringToJson(event.data)
+        if(data.position != null){
+          this.sliderValue = data.position
+          console.log(data)
+          this.sendRoverPosition(data.position)
+        }
         this.handleInfo(data)
       });
 
       this.socketRover.addEventListener('close', (event) => {
-        console.log('WebSocket fermé');
+        console.log('WebSocket Rover fermé');
       });
 
       this.socketRover.addEventListener('error', (event) => {
-        console.error('Erreur WebSocket:', event);
+        console.error('Erreur WebSocket Rover:', event);
       });
     },
     rover_go(){
