@@ -161,6 +161,12 @@ export default {
         value: this.chapterIndex
       };
       this.socket.send(JSON.stringify(jsonData));
+      if (this.currentChapter === 1) {
+        let audio = new Audio(`/all_sounds/backgroundMusic/start-chapter-end.mp3`)
+        audio.play()
+      }
+      var audio = document.getElementById("backgroundAudio")
+      audio.pause()
       this.currentChapter = this.chapterIndex
     },
     startChapter() {
