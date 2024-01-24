@@ -314,13 +314,26 @@ export default {
       if(data.name == "chapters"){
         this.chapters = data.value
       }
+      if (data.name == "chapter") {
+        var chapInt = parseInt(data.value)
+        this.currentChapter = chapInt
+      }
       if (data.name == "rpi") {
         if ([0].includes(this.currentChapter) && ["button2", "micro", "turnSphero"].includes(data.idInput)) {
-          console.log("in handle info name rpi")
           let soundName = "d"
           let audio = new Audio(`/all_sounds/${soundName}-sound/${soundName}-${data.idInput}.wav`)
           if(audio != null)
             audio.play()
+        }
+        if (this.interact === "audio" && this.currentChapter != 0) {
+          let soundName = "p"
+          if ([2, 6, 8, 13, 16, 19, 21, 24].includes(this.currentChapter)) {
+            soundName = "e"
+          }else if ([4, 10, 12, 15, 18, 20, 23, 26].includes(this.currentChapter)) {
+            soundName = "t"
+          }
+          let audio = new Audio(`/all_sounds/${soundName}-sound/${soundName}-${data.idInput}.mp3`)
+          audio.play()
         }
       }
     },
