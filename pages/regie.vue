@@ -165,9 +165,10 @@ export default {
         let audio = new Audio(`/all_sounds/backgroundMusic/start-chapter-end.mp3`)
         audio.play()
       }
+      this.currentChapter = this.chapterIndex
       var audio = document.getElementById("backgroundAudio")
       audio.pause()
-      this.currentChapter = this.chapterIndex
+      this.backgroundSound = `/all_sounds/backgroundMusic/${this.currentChapter}.mp3`
     },
     startChapter() {
       const jsonData = {
