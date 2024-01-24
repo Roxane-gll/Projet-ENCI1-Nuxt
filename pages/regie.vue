@@ -141,6 +141,7 @@ export default {
       };
       this.socket.send(JSON.stringify(jsonData2));
       this.rover_stop()
+      this.rover_get_position()
       var audioT = document.getElementById("backgroundAudio")
       audioT.volume = 0.10
       this.interact = this.selectedInteractionType
@@ -162,6 +163,7 @@ export default {
         value: "false"
       };
       this.rover_go()
+      this.turn_off_leds()
       this.socket.send(JSON.stringify(jsonData));
     },
     goToChapter() {
@@ -285,6 +287,12 @@ export default {
       for (const [key, value] of Object.entries(this.checkboxes)) {
         this.checkboxes[key] = this.checkboxesState
       }
+    },
+    turn_off_leds(){
+      for (const [key, value] of Object.entries(this.checkboxes)) {
+        this.checkboxes[key] = false
+      }
+      this.allumerLeds()
     },
 
 
