@@ -80,7 +80,7 @@ export default {
   },
   async mounted() {
     // Connectez-vous au WebSocket ici
-    this.socket = new WebSocket('ws://localhost:3001');
+    this.socket = new WebSocket('ws://192.168.43.229:3001');
     this.reconnect_rover()
     
     this.socket.addEventListener('open', (event) => {
