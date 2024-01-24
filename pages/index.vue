@@ -165,6 +165,13 @@ export default {
           this.visualInteract = []
           this.visual = false
           this.time ++
+          this.allDemo = {
+            turnSphero: 0,
+            tapSphero: 0,
+            micro: 0,
+            button1: 0,
+            button2: 0
+          }
         } else { 
           if (this.chapter === 0) {
             console.log(this.instumentUsed)
