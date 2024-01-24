@@ -44,6 +44,15 @@
       <button class="btn btn-primary" @click="sendRoverPosition(sliderValue)">send rover position</button>
     </div>
     <br>
+    <div class="flex">
+      <button class="btn btn-primary" @click="reconnect_rover()">reconnect rover régie</button>
+      <button class="btn btn-primary" @click="return_rover()">rover mauvais sens</button>
+      <button class="btn btn-primary" @click="rover_go()">rover go</button>
+      <button class="btn btn-primary" @click="rover_stop()">rover stop</button>
+      <button class="btn btn-primary" @click="rover_home()">rover home</button>
+      <button class="btn btn-primary" @click="rover_get_position()">rover get position</button>
+    </div>
+    <br>
     <div>
       <button class="btn btn-primary" @click="reset()">reset</button>
     </div>
@@ -73,7 +82,8 @@ export default {
   },
   async mounted() {
     // Connectez-vous au WebSocket ici
-    this.socket = new WebSocket('ws://localhost:3001'); // Remplacez l'URL par celle de votre serveur WebSocket
+    this.socket = new WebSocket('ws://localhost:3001');
+    this.reconnect_rover()
     
     this.socket.addEventListener('open', (event) => {
       console.log('WebSocket ouvert');
@@ -83,7 +93,7 @@ export default {
     this.socket.addEventListener('message', (event) => {
       console.log('Message reçu:', event.data);
       const data = this.stringToJson(event.data)
-      this.handleInfo(data)
+      //this.handleInfo(data)
     });
 
     this.socket.addEventListener('close', (event) => {
@@ -149,9 +159,63 @@ export default {
       };
       this.socket.send(JSON.stringify(jsonData));
     },
-    handleInfo(data) {
-      console.log(data)
-    }
+    return_rover(){
+      this.jsonDataRoverReturn = {
+          name:"action",
+          action: "return",
+        };
+        this.socketRover.send(JSON.stringify(this.jsonDataRoverReturn));
+    },
+    reconnect_rover(){
+      this.socketRover = new WebSocket('ws://192.168.43.205:8081');
+
+      this.socketRover.addEventListener('open', (event) => {
+        console.log('WebSocket ouvert');
+        // this.socketRover.send(JSON.stringify(this.connectionJson))
+      });
+
+      this.socketRover.addEventListener('message', (event) => {
+        console.log('Message reçu:', event.data);
+        const data = this.stringToJson(event.data)
+        this.handleInfo(data)
+      });
+
+      this.socketRover.addEventListener('close', (event) => {
+        console.log('WebSocket fermé');
+      });
+
+      this.socketRover.addEventListener('error', (event) => {
+        console.error('Erreur WebSocket:', event);
+      });
+    },
+    rover_go(){
+      this.jsonDataRoverGo = {
+          name:"action",
+          action: "go",
+        };
+        this.socketRover.send(JSON.stringify(this.jsonDataRoverGo));
+    },
+    rover_stop(){
+      this.jsonDataRoverStop = {
+          name:"action",
+          action: "stop",
+        };
+        this.socketRover.send(JSON.stringify(this.jsonDataRoverStop));
+    },
+    rover_home(){
+      this.jsonDataRoverHome = {
+          name:"action",
+          action: "home",
+        };
+        this.socketRover.send(JSON.stringify(this.jsonDataRoverHome));
+    },
+    rover_get_position(){
+      this.jsonDataRoverGetPosition = {
+          name:"action",
+          action: "getPosition",
+        };
+        this.socketRover.send(JSON.stringify(this.jsonDataRoverGetPosition));
+    },
   }
 };
 </script>
